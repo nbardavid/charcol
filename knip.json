@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "project": ["src/**/*.{ts,tsx}"],
-  "ignore": ["src/components/ui/**"]
+  "ignore": ["src/components/ui/**"],
+  "ignoreDependencies": ["react-grab", "@react-grab/mcp"]
 }
