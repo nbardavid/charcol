@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { AsciiOutput } from "@/components/AsciiOutput";
 import { Controls } from "@/components/Controls";
 import { DropZone } from "@/components/DropZone";
+import { LinkInput } from "@/components/LinkInput";
 import { ParseError, parseExcalidrawFile } from "@/lib/parser";
 import { convert } from "@/lib/renderer";
 import type { ConversionResult } from "@/lib/types";
@@ -13,6 +14,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [rawContent, setRawContent] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const processContent = useCallback((content: string, targetWidth: number) => {
     const file = parseExcalidrawFile(content);
@@ -38,6 +40,20 @@ export default function App() {
     },
     [width, processContent],
   );
+
+  const handleLinkLoaded = useCallback(
+    (content: string, sourceName: string) => {
+      handleFileLoaded(content, sourceName);
+    },
+    [handleFileLoaded],
+  );
+
+  const handleLinkError = useCallback((message: string) => {
+    if (message) {
+      setError(message);
+      setResult(null);
+    }
+  }, []);
 
   const handleWidthChange = useCallback(
     (newWidth: string) => {
@@ -83,7 +99,22 @@ export default function App() {
         </h2>
 
         <div className="space-y-6">
-          <DropZone onFileLoaded={handleFileLoaded} />
+          <DropZone onFileLoaded={handleFileLoaded} disabled={isLoading} />
+
+          <div className="flex items-center gap-4">
+            <div className="flex-1 border-t border-border/60" />
+            <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-[family-name:var(--font-display)]">
+              or
+            </span>
+            <div className="flex-1 border-t border-border/60" />
+          </div>
+
+          <LinkInput
+            onLinkLoaded={handleLinkLoaded}
+            onError={handleLinkError}
+            isLoading={isLoading}
+            onLoadingChange={setIsLoading}
+          />
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <Controls width={width} onWidthChange={handleWidthChange} />

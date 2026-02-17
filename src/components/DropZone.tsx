@@ -3,9 +3,10 @@ import { type ChangeEvent, type DragEvent, useCallback, useState } from "react";
 
 interface DropZoneProps {
   onFileLoaded: (content: string, fileName: string) => void;
+  disabled?: boolean;
 }
 
-export function DropZone({ onFileLoaded }: DropZoneProps) {
+export function DropZone({ onFileLoaded, disabled }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,9 +59,11 @@ export function DropZone({ onFileLoaded }: DropZoneProps) {
   return (
     <div
       className={`paper-surface deckled-edge cursor-pointer transition-all duration-200 ${
-        isDragging
-          ? "border-primary scale-[1.01] shadow-[inset_0_0_20px_rgba(184,115,51,0.15)]"
-          : "hover:scale-[1.005]"
+        disabled
+          ? "pointer-events-none opacity-60"
+          : isDragging
+            ? "border-primary scale-[1.01] shadow-[inset_0_0_20px_rgba(184,115,51,0.15)]"
+            : "hover:scale-[1.005]"
       }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
