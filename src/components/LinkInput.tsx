@@ -39,8 +39,8 @@ export function LinkInput({ onLinkLoaded, onError, isLoading, onLoadingChange }:
   );
 
   return (
-    <form onSubmit={handleSubmit} className="paper-surface px-4 py-4 sm:px-6">
-      <div className="flex items-center gap-3">
+    <form onSubmit={handleSubmit} className="paper-surface deckled-edge px-6 py-6 sm:py-8 sm:px-8">
+      <div className="flex items-center gap-3 max-w-lg mx-auto">
         <Link className="h-5 w-5 shrink-0 text-muted-foreground" strokeWidth={1.5} />
         <input
           ref={inputRef}

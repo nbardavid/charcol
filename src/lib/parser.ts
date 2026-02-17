@@ -21,7 +21,7 @@ export function parseExcalidrawFile(content: string): ExcalidrawFile {
 
   const obj = parsed as Record<string, unknown>;
 
-  if (obj.type !== "excalidraw") {
+  if (obj.type !== "excalidraw" && obj.type !== "excalidraw/clipboard") {
     throw new ParseError(
       'Invalid Excalidraw file: missing or incorrect "type" field. Expected "excalidraw".',
     );

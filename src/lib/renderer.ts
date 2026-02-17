@@ -10,6 +10,7 @@ import {
 } from "./grid";
 import type {
   AnyExcalidrawElement,
+  Binding,
   ConversionResult,
   ExcalidrawArrow,
   ExcalidrawDiamond,
@@ -65,7 +66,7 @@ export function convert(elements: AnyExcalidrawElement[], targetWidth: number): 
         renderDiamond(grid, el as ExcalidrawDiamond, scaleInfo, warnings);
         break;
       case "arrow":
-        renderArrow(grid, el as ExcalidrawArrow, scaleInfo, warnings);
+        renderArrow(grid, el as ExcalidrawArrow, scaleInfo, warnings, elements);
         break;
       case "line":
         renderLine(grid, el as ExcalidrawLine, scaleInfo, warnings);
@@ -239,13 +240,82 @@ function renderDiamond(
   }
 }
 
+interface ClipRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+function getClipRect(
+  binding: Binding | null,
+  allElements: AnyExcalidrawElement[],
+  scale: ScaleInfo,
+): ClipRect | null {
+  if (!binding) return null;
+  const shape = allElements.find((e) => e.id === binding.elementId);
+  if (!shape) return null;
+  const tl = pixelToChar(shape.x, shape.y, scale);
+  const br = pixelToChar(shape.x + shape.width, shape.y + shape.height, scale);
+  return { left: tl.cx, top: tl.cy, right: br.cx, bottom: br.cy };
+}
+
+function isInsideClip(x: number, y: number, clip: ClipRect): boolean {
+  return x >= clip.left && x <= clip.right && y >= clip.top && y <= clip.bottom;
+}
+
+/** Walk Bresenham from (fromX,fromY) toward (toX,toY) and return the last
+ *  point that is NOT inside the clip rect — i.e. the edge point just outside
+ *  the bound shape, where the arrowhead should go. */
+function findEdgePoint(
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  clip: ClipRect,
+): { x: number; y: number } | null {
+  const dx = Math.abs(toX - fromX);
+  const dy = Math.abs(toY - fromY);
+  const sx = fromX < toX ? 1 : -1;
+  const sy = fromY < toY ? 1 : -1;
+  let err = dx - dy;
+  let x = fromX;
+  let y = fromY;
+  let lastOutside: { x: number; y: number } | null = null;
+
+  while (true) {
+    if (!isInsideClip(x, y, clip)) {
+      lastOutside = { x, y };
+    } else if (lastOutside) {
+      // We just entered the clip — the previous point was the edge
+      return lastOutside;
+    }
+    if (x === toX && y === toY) break;
+    const e2 = 2 * err;
+    if (e2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if (e2 < dx) {
+      err += dx;
+      y += sy;
+    }
+  }
+  return lastOutside;
+}
+
 function renderArrow(
   grid: string[][],
   el: ExcalidrawArrow,
   scale: ScaleInfo,
   _warnings: Warning[],
+  allElements: AnyExcalidrawElement[],
 ): void {
   if (!el.points || el.points.length < 2) return;
+
+  const startClip = getClipRect(el.startBinding, allElements, scale);
+  const endClip = getClipRect(el.endBinding, allElements, scale);
+  const clips = [startClip, endClip].filter((c): c is ClipRect => c !== null);
 
   // Convert relative points to absolute coordinates
   const absPoints = el.points.map((pt) => ({
@@ -253,11 +323,11 @@ function renderArrow(
     py: el.y + pt[1],
   }));
 
-  // Draw line segments between consecutive points
+  // Draw line segments between consecutive points, clipping inside bound shapes
   for (let i = 0; i < absPoints.length - 1; i++) {
     const from = pixelToChar(absPoints[i].px, absPoints[i].py, scale);
     const to = pixelToChar(absPoints[i + 1].px, absPoints[i + 1].py, scale);
-    bresenhamLine(grid, from.cx, from.cy, to.cx, to.cy);
+    bresenhamLine(grid, from.cx, from.cy, to.cx, to.cy, clips);
   }
 
   // Arrow head at the end
@@ -265,13 +335,21 @@ function renderArrow(
     const lastIdx = absPoints.length - 1;
     const last = pixelToChar(absPoints[lastIdx].px, absPoints[lastIdx].py, scale);
     const prev = pixelToChar(absPoints[lastIdx - 1].px, absPoints[lastIdx - 1].py, scale);
-    const dx = last.cx - prev.cx;
-    const dy = last.cy - prev.cy;
+
+    // If bound, place arrowhead at the edge of the shape instead of inside it
+    let headPos = last;
+    if (endClip && isInsideClip(last.cx, last.cy, endClip)) {
+      const edge = findEdgePoint(prev.cx, prev.cy, last.cx, last.cy, endClip);
+      if (edge) headPos = { cx: edge.x, cy: edge.y };
+    }
+
+    const dx = headPos.cx - prev.cx;
+    const dy = headPos.cy - prev.cy;
 
     if (Math.abs(dx) >= Math.abs(dy)) {
-      setChar(grid, last.cx, last.cy, dx >= 0 ? ARROW_HEAD.right : ARROW_HEAD.left);
+      setChar(grid, headPos.cx, headPos.cy, dx >= 0 ? ARROW_HEAD.right : ARROW_HEAD.left);
     } else {
-      setChar(grid, last.cx, last.cy, dy >= 0 ? ARROW_HEAD.down : ARROW_HEAD.up);
+      setChar(grid, headPos.cx, headPos.cy, dy >= 0 ? ARROW_HEAD.down : ARROW_HEAD.up);
     }
   }
 
@@ -279,13 +357,20 @@ function renderArrow(
   if (el.startArrowhead && el.startArrowhead !== "none") {
     const first = pixelToChar(absPoints[0].px, absPoints[0].py, scale);
     const next = pixelToChar(absPoints[1].px, absPoints[1].py, scale);
-    const dx = first.cx - next.cx;
-    const dy = first.cy - next.cy;
+
+    let headPos = first;
+    if (startClip && isInsideClip(first.cx, first.cy, startClip)) {
+      const edge = findEdgePoint(next.cx, next.cy, first.cx, first.cy, startClip);
+      if (edge) headPos = { cx: edge.x, cy: edge.y };
+    }
+
+    const dx = headPos.cx - next.cx;
+    const dy = headPos.cy - next.cy;
 
     if (Math.abs(dx) >= Math.abs(dy)) {
-      setChar(grid, first.cx, first.cy, dx >= 0 ? ARROW_HEAD.right : ARROW_HEAD.left);
+      setChar(grid, headPos.cx, headPos.cy, dx >= 0 ? ARROW_HEAD.right : ARROW_HEAD.left);
     } else {
-      setChar(grid, first.cx, first.cy, dy >= 0 ? ARROW_HEAD.down : ARROW_HEAD.up);
+      setChar(grid, headPos.cx, headPos.cy, dy >= 0 ? ARROW_HEAD.down : ARROW_HEAD.up);
     }
   }
 }
@@ -395,7 +480,14 @@ function renderImage(
 }
 
 // Bresenham's line algorithm with direction-aware character selection
-function bresenhamLine(grid: string[][], x0: number, y0: number, x1: number, y1: number): void {
+function bresenhamLine(
+  grid: string[][],
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  clips?: ClipRect[],
+): void {
   const dx = Math.abs(x1 - x0);
   const dy = Math.abs(y1 - y0);
   const sx = x0 < x1 ? 1 : -1;
@@ -423,7 +515,10 @@ function bresenhamLine(grid: string[][], x0: number, y0: number, x1: number, y1:
       char = isHorizontal ? LINE_CHAR.horizontal : LINE_CHAR.vertical;
     }
 
-    setChar(grid, x, y, char);
+    const clipped = clips?.some((c) => isInsideClip(x, y, c));
+    if (!clipped) {
+      setChar(grid, x, y, char);
+    }
 
     if (x === x1 && y === y1) break;
 

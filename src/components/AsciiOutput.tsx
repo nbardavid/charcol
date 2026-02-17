@@ -17,14 +17,11 @@ export function AsciiOutput({ result }: AsciiOutputProps) {
   };
 
   return (
-    <div className="paper-surface p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-[family-name:var(--font-display)] text-lg font-light">
-          Output
-          <span className="ml-2 text-sm text-muted-foreground">
-            {result.width}&times;{result.height}
-          </span>
-        </h3>
+    <div className="paper-surface p-5 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <span className="text-sm text-muted-foreground">
+          {result.width}&times;{result.height}
+        </span>
         <Button
           variant="outline"
           size="sm"
@@ -45,7 +42,7 @@ export function AsciiOutput({ result }: AsciiOutputProps) {
         </Button>
       </div>
 
-      <div className="output-frame p-4 overflow-x-auto">
+      <div className="output-frame p-4 overflow-auto flex-1 min-h-0">
         <pre
           className="text-xs leading-tight whitespace-pre text-foreground"
           style={{ fontFamily: "var(--font-mono)" }}

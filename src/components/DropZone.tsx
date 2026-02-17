@@ -69,9 +69,9 @@ export function DropZone({ onFileLoaded, disabled }: DropZoneProps) {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
-      <label className="flex flex-col items-center justify-center gap-3 py-16 cursor-pointer">
+      <label className="flex flex-col items-center justify-center gap-3 py-8 sm:py-10 cursor-pointer">
         <Upload
-          className={`h-10 w-10 ${isDragging ? "text-primary" : "text-muted-foreground"}`}
+          className={`h-8 w-8 ${isDragging ? "text-primary" : "text-muted-foreground"}`}
           strokeWidth={1.5}
         />
         <div className="text-center">

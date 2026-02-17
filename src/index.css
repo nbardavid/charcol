@@ -124,6 +124,89 @@ body::before {
   animation-delay: 0.6s;
 }
 
+/* Splash screen — book-opening split */
+@keyframes splash-slide-up {
+  0%,
+  30% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+@keyframes splash-slide-down {
+  0%,
+  30% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+.splash-half {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: var(--background);
+}
+.splash-top {
+  top: 0;
+  height: 50vh;
+  animation: splash-slide-up 1s ease-in-out forwards;
+}
+.splash-bottom {
+  bottom: 0;
+  height: 50vh;
+  animation: splash-slide-down 1s ease-in-out forwards;
+}
+.splash-inner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.splash-top .splash-inner {
+  top: 0;
+}
+.splash-bottom .splash-inner {
+  bottom: 0;
+}
+
+/* Editorial nav link */
+.nav-link {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  padding: 0.25rem 0;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.nav-link:hover {
+  color: var(--foreground);
+}
+.nav-link[data-active="true"] {
+  color: var(--copper);
+}
+.nav-link[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--copper);
+}
+
 /* Paper surface */
 .paper-surface {
   background: var(--card);
