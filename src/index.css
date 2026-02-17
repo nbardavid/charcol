@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-display: "Cormorant Garamond", serif;
+  --font-body: "Source Serif 4", serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-copper: var(--copper);
+  --color-sepia: var(--sepia);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: #f5f0e8;
+  --foreground: #2a2420;
+  --card: #faf6f0;
+  --card-foreground: #2a2420;
+  --popover: #faf6f0;
+  --popover-foreground: #2a2420;
+  --primary: #b87333;
+  --primary-foreground: #faf6f0;
+  --secondary: #ede8e0;
+  --secondary-foreground: #2a2420;
+  --muted: #ede8e0;
+  --muted-foreground: #6b6360;
+  --accent: #ede8e0;
+  --accent-foreground: #2a2420;
+  --destructive: #a0522d;
+  --destructive-foreground: #a0522d;
+  --border: #d9d0c4;
+  --input: #d9d0c4;
+  --ring: #b87333;
+  --radius: 0.625rem;
+  --copper: #b87333;
+  --sepia: #8b7355;
+}
+
+/* Paper grain overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Keyframes */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gentle-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* Animation utilities */
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out both;
+}
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+.animate-gentle-bounce {
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+.stagger-2 {
+  animation-delay: 0.25s;
+}
+.stagger-3 {
+  animation-delay: 0.4s;
+}
+.stagger-4 {
+  animation-delay: 0.6s;
+}
+
+/* Paper surface */
+.paper-surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow:
+    0 1px 3px rgba(42, 36, 32, 0.06),
+    0 4px 12px rgba(42, 36, 32, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Deckled edge */
+.deckled-edge {
+  clip-path: polygon(
+    0% 2%,
+    3% 0%,
+    7% 1%,
+    12% 0%,
+    18% 1%,
+    24% 0%,
+    30% 1%,
+    36% 0%,
+    42% 1%,
+    48% 0%,
+    54% 1%,
+    60% 0%,
+    66% 1%,
+    72% 0%,
+    78% 1%,
+    84% 0%,
+    90% 1%,
+    95% 0%,
+    100% 2%,
+    100% 98%,
+    97% 100%,
+    92% 99%,
+    86% 100%,
+    80% 99%,
+    74% 100%,
+    68% 99%,
+    62% 100%,
+    56% 99%,
+    50% 100%,
+    44% 99%,
+    38% 100%,
+    32% 99%,
+    26% 100%,
+    20% 99%,
+    14% 100%,
+    8% 99%,
+    3% 100%,
+    0% 98%
+  );
+}
+
+/* Output frame — charcoal on warm paper */
+.output-frame {
+  background: var(--card);
+  border: 2px solid var(--border);
+  outline: 1px solid #b8a99a;
+  outline-offset: 3px;
+  border-radius: var(--radius);
+  box-shadow:
+    inset 0 2px 8px rgba(42, 36, 32, 0.06),
+    0 2px 8px rgba(42, 36, 32, 0.08);
+}
+
+/* Vignette */
+.vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(42, 36, 32, 0.06) 100%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+}

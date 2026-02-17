@@ -1,0 +1,9 @@
+pre-commit:
+  parallel: false
+  commands:
+    biome-check:
+      glob: "*.{ts,tsx,js,jsx,json,css}"
+      run: pnpm biome check --staged --no-errors-on-unmatched --write
+      stage_fixed: true
+    knip:
+      run: pnpm knip
