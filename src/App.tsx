@@ -96,7 +96,7 @@ export default function App() {
                 Charcol
               </h1>
               <p className="font-[family-name:var(--font-display)] text-xl sm:text-2xl italic text-muted-foreground mt-4">
-                Characters that draw.
+                From sketch to prompt.
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function App() {
                 Charcol
               </h1>
               <p className="font-[family-name:var(--font-display)] text-xl sm:text-2xl italic text-muted-foreground mt-4">
-                Characters that draw.
+                From sketch to prompt.
               </p>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function App() {
             }`}
           >
             <p className="font-[family-name:var(--font-display)] text-xl sm:text-2xl italic text-muted-foreground">
-              Characters that draw.
+              From sketch to prompt.
             </p>
           </div>
         </div>
