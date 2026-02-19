@@ -109,7 +109,7 @@ export default function App() {
       {/* Header — CSS Grid: [NewBtn] [Title+subtitle] [CopyBtn] */}
       <header
         className={`shrink-0 grid grid-cols-[auto_1fr_auto] items-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-          isOutputMode ? "py-3 px-4 sm:px-6 border-b border-border/60" : "pt-[30vh] pb-8 px-6"
+          isOutputMode ? "py-3 px-4 sm:px-6" : "pt-[30vh] pb-8 px-6"
         }`}
       >
         {/* Left: New button */}
@@ -220,9 +220,7 @@ export default function App() {
       {/* Footer — always in DOM, transitions visibility */}
       <div
         className={`shrink-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden ${
-          isOutputMode
-            ? "max-h-20 opacity-100 py-3 px-4 sm:px-6 border-t border-border/60"
-            : "max-h-0 opacity-0"
+          isOutputMode ? "max-h-20 opacity-100 py-3 px-4 sm:px-6" : "max-h-0 opacity-0"
         }`}
       >
         <WidthSlider width={width} onWidthChange={handleWidthChange} />
