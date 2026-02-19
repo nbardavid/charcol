@@ -204,7 +204,7 @@ export default function App() {
               : "opacity-0 absolute inset-0 pointer-events-none overflow-hidden"
           }`}
         >
-          {result && <AsciiOutput result={result} />}
+          {result && <AsciiOutput result={result} columns={width} />}
         </div>
       </div>
 
