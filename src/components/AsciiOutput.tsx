@@ -6,7 +6,7 @@ interface AsciiOutputProps {
 
 export function AsciiOutput({ result }: AsciiOutputProps) {
   return (
-    <div className="output-frame p-4 overflow-auto h-full mx-auto w-fit">
+    <div className="output-frame p-4 overflow-auto h-full mx-auto w-fit max-w-full">
       <pre
         className="text-xs leading-tight whitespace-pre text-foreground"
         style={{ fontFamily: "var(--font-mono)" }}

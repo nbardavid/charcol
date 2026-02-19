@@ -178,50 +178,6 @@ body::before {
   bottom: 0;
 }
 
-/* Phase transitions */
-.input-phase {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-.input-phase--active {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-}
-.input-phase--exit {
-  opacity: 0;
-  transform: scale(0.97);
-  pointer-events: none;
-}
-
-.output-phase {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-.output-phase--active {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-.output-phase--hidden {
-  opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none;
-}
-
 /* Width slider */
 .width-slider {
   -webkit-appearance: none;

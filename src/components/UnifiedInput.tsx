@@ -113,7 +113,7 @@ export function UnifiedInput({
 
   return (
     <div
-      className={`paper-surface deckled-edge transition-all duration-200 max-w-xl w-full mx-auto ${
+      className={`transition-all duration-200 ${
         isLoading
           ? "pointer-events-none opacity-60"
           : isDragging

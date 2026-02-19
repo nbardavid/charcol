@@ -106,47 +106,50 @@ export default function App() {
         </>
       )}
 
-      {/* Phase 1: Input — centered on viewport */}
-      <div className={`input-phase ${!isOutputMode ? "input-phase--active" : "input-phase--exit"}`}>
-        <div className="text-center mb-10">
-          <h1 className="font-[family-name:var(--font-display)] text-6xl sm:text-7xl lg:text-8xl font-light tracking-tight text-foreground">
-            Charcol
-          </h1>
-          <p className="font-[family-name:var(--font-display)] text-xl sm:text-2xl italic text-muted-foreground mt-4">
-            Characters that draw.
-          </p>
-        </div>
-
-        <UnifiedInput
-          key={inputKey}
-          onContent={handleFileLoaded}
-          onError={handleError}
-          isLoading={isLoading}
-          onLoadingChange={setIsLoading}
-        />
-
-        {error && !isOutputMode && (
-          <div className="max-w-xl mx-auto mt-4 rounded-md border border-[var(--destructive)]/30 bg-[var(--destructive)]/5 p-4">
-            <p className="text-sm" style={{ color: "var(--destructive)" }}>
-              {error}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Phase 2: Output — near fullscreen */}
-      <div
-        className={`output-phase ${isOutputMode ? "output-phase--active" : "output-phase--hidden"}`}
+      {/* Header — CSS Grid: [NewBtn] [Title+subtitle] [CopyBtn] */}
+      <header
+        className={`shrink-0 grid grid-cols-[auto_1fr_auto] items-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          isOutputMode ? "py-3 px-4 sm:px-6 border-b border-border/60" : "pt-[30vh] pb-8 px-6"
+        }`}
       >
-        {/* Compact header */}
-        <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/60">
+        {/* Left: New button */}
+        <div
+          className={`transition-all duration-300 ${
+            isOutputMode ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
           <Button variant="outline" size="sm" className="gap-2" onClick={handleReset}>
             <ArrowLeft className="h-4 w-4" />
             New
           </Button>
-          <h1 className="font-[family-name:var(--font-display)] text-xl font-light tracking-tight text-foreground">
+        </div>
+
+        {/* Center: Title + subtitle */}
+        <div className="text-center">
+          <h1
+            className={`font-[family-name:var(--font-display)] font-light tracking-tight text-foreground transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              isOutputMode ? "text-xl" : "text-6xl sm:text-7xl lg:text-8xl"
+            }`}
+          >
             Charcol
           </h1>
+          <div
+            className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              isOutputMode ? "max-h-0 opacity-0" : "max-h-16 opacity-100 mt-4"
+            }`}
+          >
+            <p className="font-[family-name:var(--font-display)] text-xl sm:text-2xl italic text-muted-foreground">
+              Characters that draw.
+            </p>
+          </div>
+        </div>
+
+        {/* Right: Copy button */}
+        <div
+          className={`transition-all duration-300 ${
+            isOutputMode ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
           <Button
             variant="outline"
             size="sm"
@@ -166,16 +169,63 @@ export default function App() {
             )}
           </Button>
         </div>
+      </header>
 
-        {/* ASCII output area */}
-        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-auto">
+      {/* Card — same div always */}
+      <div
+        className={`relative transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          isOutputMode
+            ? "flex-1 min-h-0 mx-4 sm:mx-6 p-2 overflow-auto"
+            : "max-w-xl w-full mx-auto paper-surface deckled-edge"
+        }`}
+      >
+        {/* Input content */}
+        <div
+          className={`transition-opacity duration-300 ${
+            isOutputMode
+              ? "opacity-0 absolute inset-0 pointer-events-none overflow-hidden"
+              : "opacity-100 relative"
+          }`}
+        >
+          <UnifiedInput
+            key={inputKey}
+            onContent={handleFileLoaded}
+            onError={handleError}
+            isLoading={isLoading}
+            onLoadingChange={setIsLoading}
+          />
+        </div>
+
+        {/* Output content */}
+        <div
+          className={`transition-opacity duration-300 ${
+            isOutputMode
+              ? "opacity-100 relative h-full"
+              : "opacity-0 absolute inset-0 pointer-events-none overflow-hidden"
+          }`}
+        >
           {result && <AsciiOutput result={result} />}
         </div>
+      </div>
 
-        {/* Bottom bar: width slider */}
-        <div className="shrink-0 px-4 sm:px-6 py-3 border-t border-border/60">
-          <WidthSlider width={width} onWidthChange={handleWidthChange} />
+      {/* Error — below card in input mode */}
+      {error && !isOutputMode && (
+        <div className="max-w-xl mx-auto mt-4 rounded-md border border-[var(--destructive)]/30 bg-[var(--destructive)]/5 p-4">
+          <p className="text-sm" style={{ color: "var(--destructive)" }}>
+            {error}
+          </p>
         </div>
+      )}
+
+      {/* Footer — always in DOM, transitions visibility */}
+      <div
+        className={`shrink-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden ${
+          isOutputMode
+            ? "max-h-20 opacity-100 py-3 px-4 sm:px-6 border-t border-border/60"
+            : "max-h-0 opacity-0"
+        }`}
+      >
+        <WidthSlider width={width} onWidthChange={handleWidthChange} />
       </div>
     </div>
   );
