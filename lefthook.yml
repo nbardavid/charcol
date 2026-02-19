@@ -7,3 +7,6 @@ pre-commit:
       stage_fixed: true
     knip:
       run: pnpm knip
+    react-doctor:
+      glob: "*.{ts,tsx,jsx}"
+      run: npx -y react-doctor@latest .
