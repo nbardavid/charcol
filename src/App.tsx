@@ -4,6 +4,8 @@ import { AsciiOutput } from "@/components/AsciiOutput";
 import { UnifiedInput } from "@/components/UnifiedInput";
 import { Button } from "@/components/ui/button";
 import { WidthSlider } from "@/components/WidthSlider";
+import { useSound } from "@/hooks/use-sound";
+import { bookFlip2Sound } from "@/lib/book-flip-2";
 import { ParseError, parseExcalidrawFile } from "@/lib/parser";
 import { convert } from "@/lib/renderer";
 import type { ConversionResult } from "@/lib/types";
@@ -17,6 +19,9 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [inputKey, setInputKey] = useState(0);
   const [copied, setCopied] = useState(false);
+
+  const [playFlip] = useSound(bookFlip2Sound, { volume: 0.5 });
+  const [playFlipBack] = useSound(bookFlip2Sound, { volume: 0.5, reverse: true });
 
   const isOutputMode = result !== null;
 
@@ -32,6 +37,7 @@ export default function App() {
       try {
         const conversionResult = processContent(content, width);
         setResult(conversionResult);
+        playFlip();
       } catch (err) {
         if (err instanceof ParseError) {
           setError(err.message);
@@ -41,7 +47,7 @@ export default function App() {
         setResult(null);
       }
     },
-    [width, processContent],
+    [width, processContent, playFlip],
   );
 
   const handleWidthChange = useCallback(
@@ -60,11 +66,12 @@ export default function App() {
   );
 
   const handleReset = useCallback(() => {
+    playFlipBack();
     setResult(null);
     setRawContent(null);
     setError(null);
     setInputKey((k) => k + 1);
-  }, []);
+  }, [playFlipBack]);
 
   const handleCopy = useCallback(async () => {
     if (!result) return;
