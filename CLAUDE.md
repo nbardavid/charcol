@@ -2,6 +2,10 @@
 
 **CHAR** + coal — characters that draw, like charcoal sketches.
 
+## Deployment
+
+Hosted on Vercel: [charcol.nbardavid.dev](https://charcol.nbardavid.dev)
+
 ## What it does
 
 Web tool that converts `.excalidraw` files into Unicode box-drawing ASCII art, ready to copy-paste into Claude or any monospace context.
